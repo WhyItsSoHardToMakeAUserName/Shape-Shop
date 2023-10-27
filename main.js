@@ -70,7 +70,7 @@ if (Cube) {
 
 const cubeBody = new CANNON.Body({
   shape: new CANNON.Box(new CANNON.Vec3(5,5,5)),
-  mass:1000,
+  mass:10000,
   position: new CANNON.Vec3(-sWidth*0.001-48,5,30)
   
 })
@@ -127,10 +127,19 @@ scene.add(spotLight,targetObject,directionalLight)
 
 const controls = new OrbitControls(camera,renderer.domElement)
 
-function animate(){
-  setTimeout(function () {
-    requestAnimationFrame( animate );
-    },interval);
+
+let previousTime = performance.now();
+const fixedTimeStep = 1.0 / 60; // 60 FPS
+
+function animate() {
+  window.requestAnimationFrame(animate);
+
+  // Calculate deltaTime
+  const currentTime = performance.now();
+  const deltaTime = (currentTime - previousTime) / 1000; // Convert milliseconds to seconds
+
+  // Update physics based on deltaTime
+  world.step(fixedTimeStep, deltaTime);
   controls.update
   renderer.render(scene,camera);
 
@@ -156,7 +165,8 @@ function animate(){
   const cameraX = cameraPosition.x;
   const cameraY = cameraPosition.y;
   const cameraZ = cameraPosition.z;
-  console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
+  // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
+  console.log(sWidth);
   
 }
 
