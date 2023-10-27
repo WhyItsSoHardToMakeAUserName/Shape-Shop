@@ -152,6 +152,9 @@ function animate(){
   const cameraY = cameraPosition.y;
   const cameraZ = cameraPosition.z;
   console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
+
+  refreshLoop();
+  document.getElementById("fps-counter").textContent = fps
 }
 
 window.requestAnimationFrame( animate );
@@ -204,3 +207,26 @@ document.getElementById("BallButton").addEventListener("click",  function() {
     new CANNON.Vec3(0,0,0)
   )
 });
+
+
+
+
+
+//fps counter
+
+const times = [];
+let fps;
+
+function refreshLoop() {
+  window.requestAnimationFrame(() => {
+    const now = performance.now();
+    while (times.length > 0 && times[0] <= now - 1000) {
+      times.shift();
+    }
+    times.push(now);
+    fps = times.length;
+    refreshLoop();
+  });
+}
+console.log(fps)
+refreshLoop();

@@ -221,3 +221,13 @@ button svg {
   width: 15px;
   transition-delay: 0.2s;
 }
+
+
+
+.fps-counter{
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #e4e4e4;
+  z-index: 1;
+}
