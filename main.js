@@ -17,7 +17,9 @@ const world = new CANNON.World({
 
 // -20.81
 
-const timeStep = 1/60;
+const timeStep = 1/30;
+const maxSubSteps = 3;
+
 const sWidth = window.innerWidth
 const sHeight = window.innerHeight
 
@@ -130,7 +132,7 @@ function animate(){
   renderer.render(scene,camera);
 
   world.step(timeStep)
-
+  world.maxSubSteps=maxSubSteps
   plane.position.copy(planeBody.position);
   plane.quaternion.copy(planeBody.quaternion);
 
@@ -201,7 +203,7 @@ function delayedLoop(iterations, delay) {
 // Ball Launch button
 document.getElementById("BallButton").addEventListener("click",  function() {
   BallBody.applyForce(
-    new CANNON.Vec3(-20000000,0,0),
+    new CANNON.Vec3(-2000000,0,0),
     new CANNON.Vec3(0,0,0)
   )
 });
