@@ -17,8 +17,9 @@ const world = new CANNON.World({
 
 // -20.81
 
-const timeStep = 1/30;
+const timeStep = 1/60;
 const maxSubSteps = 3;
+const interval = 1000 / 60;
 
 const sWidth = window.innerWidth
 const sHeight = window.innerHeight
@@ -127,7 +128,9 @@ scene.add(spotLight,targetObject,directionalLight)
 const controls = new OrbitControls(camera,renderer.domElement)
 
 function animate(){
-  requestAnimationFrame( animate );
+  setTimeout(function () {
+    requestAnimationFrame( animate );
+    },interval);
   controls.update
   renderer.render(scene,camera);
 
@@ -154,7 +157,7 @@ function animate(){
   const cameraY = cameraPosition.y;
   const cameraZ = cameraPosition.z;
   console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
-
+  
 }
 
 window.requestAnimationFrame( animate );
