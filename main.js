@@ -68,7 +68,7 @@ if (Cube) {
 const cubeBody = new CANNON.Body({
   shape: new CANNON.Box(new CANNON.Vec3(5,5,5)),
   mass:1000,
-  position: new CANNON.Vec3(-sWidth*0.013-48,5,30)
+  position: new CANNON.Vec3(-sWidth*0.001-48,5,30)
   
 })
 world.addBody(cubeBody)
@@ -137,6 +137,9 @@ function animate(){
   if (Cube) {
     spotLight.target = Cube;
   }
+  
+  Cube.position.copy(cubeBody.position)
+  Cube.quaternion.copy(cubeBody.quaternion)
 
   Ball.position.copy(BallBody.position);
   Ball.quaternion.copy(BallBody.quaternion);
@@ -153,8 +156,6 @@ function animate(){
 
 window.requestAnimationFrame( animate );
 //(-40,14,30)
-
-
 
 
 window.addEventListener('resize', () => {
@@ -194,7 +195,7 @@ function delayedLoop(iterations, delay) {
   loop();
 }
 
-delayedLoop(5,970)
+// delayedLoop(5,970)
 
 // Ball Launch button
 document.getElementById("BallButton").addEventListener("click",  function() {
