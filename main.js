@@ -153,8 +153,6 @@ function animate(){
   const cameraZ = cameraPosition.z;
   console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
 
-  refreshLoop();
-  document.getElementById("fps-counter").textContent = fps
 }
 
 window.requestAnimationFrame( animate );
@@ -225,6 +223,7 @@ function refreshLoop() {
     }
     times.push(now);
     fps = times.length;
+    document.getElementById("fps-counter").textContent = fps
     refreshLoop();
   });
 }
