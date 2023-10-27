@@ -1,6 +1,3 @@
-canvas{
-
-}
 body{
   margin: 0;
   display: block;
@@ -52,8 +49,6 @@ main{
 .main-bg{
   display: flex;
   justify-content: center;
-}
-.main-shape1{
 }
 .main-text1{
   flex-direction: column;
