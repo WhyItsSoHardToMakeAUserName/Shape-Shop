@@ -26,8 +26,8 @@ const cubeBody = new CANNON.Body({
 });
 world.addBody(cubeBody);
 
-bodies.push(cubeBody);
 bodies.push(BallBody);
+bodies.push(cubeBody);
 
 self.addEventListener('message', (event) => {
     const { timeStep, positions, quaternions } = event.data;

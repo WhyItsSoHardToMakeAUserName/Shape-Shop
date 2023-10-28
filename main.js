@@ -56,13 +56,9 @@ const Ball = new THREE.Mesh(
   new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
   )
 
-const testCube = new THREE.Mesh(
-  new THREE.BoxGeometry(15,15,15),
-  new THREE.MeshStandardMaterial({color:0x000000,roughness:0,metalness:0.5})
-)
 
 
-
+meshes.push(Ball)
 var Cube;
 gltfLoader.load('./assets/scene.gltf',function(gltf){
   const model = gltf.scene;
@@ -77,7 +73,6 @@ if (Cube) {
   spotLight.target = Cube;
 }
 // // meshes.push(Cube)
-meshes.push(Ball)
 
 
 
@@ -97,7 +92,7 @@ const wall = new THREE.Mesh(wallGeometry,wallMaterial)
 
 plane.receiveShadow = true;
 wall.receiveShadow = true;
-scene.add(plane,wall,Ball,testCube)
+scene.add(plane,wall,Ball)
 
 
 //lights
@@ -127,7 +122,6 @@ const controls = new OrbitControls(camera,renderer.domElement)
 
 
 function requestDataFromWorker() {
-  if (Ball) { // Ensure Cube is defined
     sendTime = performance.now();
 
     // Create new Float32Arrays to avoid ArrayBuffer transfer issues
@@ -143,9 +137,7 @@ function requestDataFromWorker() {
       },
       [newPositionArray.buffer, newQuaternionArray.buffer]
     );
-  }
 }
-
 
 worker.addEventListener('message', (event) => {
   // Get fresh data from the worker
