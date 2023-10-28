@@ -71,12 +71,12 @@ gltfLoader.load('./assets/scene.gltf',function(gltf){
   Cube = model;
   Cube.castShadow = true
   Cube.rotateZ(90)
+  meshes.push(Cube)
 })
 if (Cube) {
   spotLight.target = Cube;
 }
 // // meshes.push(Cube)
-meshes.push(testCube)
 meshes.push(Ball)
 
 
