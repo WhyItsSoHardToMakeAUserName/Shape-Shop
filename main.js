@@ -8,13 +8,21 @@ import { Vec3 } from 'cannon-es';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const gltfLoader = new GLTFLoader();
-const myWorker = new Worker('worker-script.js');
 
 const scene = new THREE.Scene();
-const world = new CANNON.World({
-  gravity: new CANNON.Vec3(0,-20.81,0)
-})
 
+
+const N = 2
+let positions = new Float32Array(2 * 3);
+let quaternions = new Float32Array(2 * 4);
+positions.fill(1);
+quaternions.fill(1);
+console.log(positions[0])
+
+const worker = new Worker('worker-script.js',{type:"module"});
+
+let sendTime
+const meshes = []
 // -20.81
 
 const timeStep = 1/60;
@@ -47,34 +55,23 @@ const Ball = new THREE.Mesh(
   new THREE.SphereGeometry(5,150,200),
   new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
   )
-const BallBody = new CANNON.Body({
-  shape: new CANNON.Sphere(5),
-  mass:1000,
-  position: new CANNON.Vec3(100,5,30)
-})
-world.addBody(BallBody)
+
 
 //cube
-var Cube;
-gltfLoader.load('./assets/scene.gltf',function(gltf){
-  const model = gltf.scene;
-  model.scale.set(5,5,5);
-  scene.add(model);
-  Cube = model;
-  Cube.castShadow = true
-  Cube.rotateZ(90)
-})
-if (Cube) {
-  spotLight.target = Cube;
-}
-
-const cubeBody = new CANNON.Body({
-  shape: new CANNON.Box(new CANNON.Vec3(5,5,5)),
-  mass:10000,
-  position: new CANNON.Vec3(-sWidth*0.001-48,5,30)
-  
-})
-world.addBody(cubeBody)
+// var Cube;
+// gltfLoader.load('./assets/scene.gltf',function(gltf){
+//   const model = gltf.scene;
+//   model.scale.set(5,5,5);
+//   scene.add(model);
+//   Cube = model;
+//   Cube.castShadow = true
+//   Cube.rotateZ(90)
+// })
+// if (Cube) {
+//   spotLight.target = Cube;
+// }
+// meshes.push(Cube)
+meshes.push(Ball)
 
 
 
@@ -83,13 +80,8 @@ const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(600,600),
   new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
 )
+plane.rotateX(-Math.PI/2)
 
-const planeBody = new CANNON.Body({
-  shape: new CANNON.Plane(),
-  type: CANNON.Body.STATIC
-})
-planeBody.quaternion.setFromEuler(-Math.PI / 2,0,0)
-world.addBody(planeBody)
 
 //wall
 const wallGeometry = new THREE.PlaneGeometry(600,600)
@@ -128,37 +120,61 @@ scene.add(spotLight,targetObject,directionalLight)
 const controls = new OrbitControls(camera,renderer.domElement)
 
 
-let previousTime = performance.now();
-const fixedTimeStep = 1.0 / 60; // 60 FPS
+function requestDataFromWorker() {
+  if (Ball) { // Ensure Cube is defined
+    sendTime = performance.now();
+    worker.postMessage(
+      {
+        timeStep,
+        positions,
+        quaternions,
+      },
+      // Specify that we want actually transfer the memory, not copy it over. This is faster.
+      [positions.buffer, quaternions.buffer]
+    );
+  }
+};
+
+worker.addEventListener('message', (event) => {
+  // Get fresh data from the worker
+  positions = event.data.positions
+  quaternions = event.data.quaternions
+  console.log("working")
+  // Update the three.js meshes
+  for (let i = 0; i < meshes.length; i++) {
+    meshes[i].position.set(positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2])
+    meshes[i].quaternion.set(
+      quaternions[i * 4 + 0],
+      quaternions[i * 4 + 1],
+      quaternions[i * 4 + 2],
+      quaternions[i * 4 + 3]
+    )
+  }
+
+  // Delay the next step by the amount of timeStep remaining,
+  // otherwise run it immediatly
+  const delay = timeStep * 1000 - (performance.now() - sendTime)
+  setTimeout(requestDataFromWorker, Math.max(delay, 0))
+  console.log("message back from worker")
+})
+
+
+requestDataFromWorker()
+
 
 function animate() {
-  window.requestAnimationFrame(animate);
+  console.log('animate')
+  worker.postMessage("Hello from the main thread!");
+  requestAnimationFrame(animate);
 
-  // Calculate deltaTime
-  const currentTime = performance.now();
-  const deltaTime = (currentTime - previousTime) / 1000; // Convert milliseconds to seconds
-
-  // Update physics based on deltaTime
-  world.step(fixedTimeStep, deltaTime);
   controls.update
   renderer.render(scene,camera);
 
-  world.step(timeStep)
-  world.maxSubSteps=maxSubSteps
-  plane.position.copy(planeBody.position);
-  plane.quaternion.copy(planeBody.quaternion);
-
-  if (Cube) {
-    spotLight.target = Cube;
+  if (Ball) {
+    spotLight.target = Ball;
   }
-  
-  Cube.position.copy(cubeBody.position)
-  Cube.quaternion.copy(cubeBody.quaternion)
 
-  Ball.position.copy(BallBody.position);
-  Ball.quaternion.copy(BallBody.quaternion);
-
-  spotLight.position.setX(cubeBody.position.x+10)
+  // spotLight.position.setX(cubeBody.position.x+10)
   if( window.innerWidth<=1570 && window.innerWidth >=785)spotLight.angle = window.innerWidth*0.00028;
   //camera position log
   const cameraPosition = camera.position;
@@ -166,11 +182,11 @@ function animate() {
   const cameraY = cameraPosition.y;
   const cameraZ = cameraPosition.z;
   // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
-  console.log(sWidth);
+
   
 }
 
-window.requestAnimationFrame( animate );
+animate()
 //(-40,14,30)
 
 
@@ -189,37 +205,31 @@ window.addEventListener('resize', () => {
   
   
 
-  console.log(newWidth)
 });
 
 
-function delayedLoop(iterations, delay) {
-  let count = 0;
+// function delayedLoop(iterations, delay) {
+//   let count = 0;
 
-  function loop() {
-    if (count < iterations) {
-        setTimeout(loop, delay);
-        cubeBody.applyForce(
-          new CANNON.Vec3(500000,0,0),
-          new CANNON.Vec3(0,0,0)
-        )
+//   function loop() {
+//     if (count < iterations) {
+//         setTimeout(loop, delay);
+//         cubeBody.applyForce(
+//           new CANNON.Vec3(500000,0,0),
+//           new CANNON.Vec3(0,0,0)
+//         )
 
-        count++;
-      }
-  }
+//         count++;
+//       }
+//   }
 
-  loop();
-}
+//   loop();
+// }
 
 // delayedLoop(5,970)
 
 // Ball Launch button
-document.getElementById("BallButton").addEventListener("click",  function() {
-  BallBody.applyForce(
-    new CANNON.Vec3(-2000000,0,0),
-    new CANNON.Vec3(0,0,0)
-  )
-});
+
 
 
 
@@ -242,5 +252,4 @@ function refreshLoop() {
     refreshLoop();
   });
 }
-console.log(fps)
 refreshLoop();

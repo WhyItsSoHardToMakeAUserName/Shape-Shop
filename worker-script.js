@@ -1,36 +1,84 @@
-// import * as THREE from 'three';
-// import * as CANNON from 'cannon-es';
+import * as CANNON from 'cannon-es';
+console.log("worker connected")
+const bodies = []
 
-// function animate() {
-//     requestAnimationFrame(animate);
-//     controls.update();
-//     renderer.render(scene, camera);
-//     world.step(timeStep);
-//     plane.position.copy(planeBody.position);
-//     plane.quaternion.copy(planeBody.quaternion);
+
+const world = new CANNON.World({
+    gravity: new CANNON.Vec3(0,-20.81,0),
+  })
   
-//     if (Cube) {
-//       spotLight.target = Cube;
-//     }
   
-//     Cube.position.copy(cubeBody.position);
-//     Cube.quaternion.copy(cubeBody.quaternion);
-  
-//     Ball.position.copy(BallBody.position);
-//     Ball.quaternion.copy(BallBody.quaternion);
-  
-//     spotLight.position.setX(cubeBody.position.x + 10);
-  
-//     if (window.innerWidth <= 1570 && window.innerWidth >= 785) {
-//       spotLight.angle = window.innerWidth * 0.00028;
-//     }
-  
-//     // camera position log
-//     const cameraPosition = camera.position;
-//     const cameraX = cameraPosition.x;
-//     const cameraY = cameraPosition.y;
-//     const cameraZ = cameraPosition.z;
-//     console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
-//   }
-  
-//   animate();
+const planeBody = new CANNON.Body({
+shape: new CANNON.Plane(),
+type: CANNON.Body.STATIC
+})
+planeBody.quaternion.setFromEuler(-Math.PI / 2,0,0)
+world.addBody(planeBody)
+
+
+const BallBody = new CANNON.Body({
+shape: new CANNON.Sphere(5),
+mass:1000,
+position: new CANNON.Vec3(100,5,30)
+})
+world.addBody(BallBody)
+
+// const cubeBody = new CANNON.Body({
+//     shape: new CANNON.Box(new CANNON.Vec3(5,5,5)),
+//     mass:10000,
+//     position: new CANNON.Vec3(-1440*0.001-48,5,30)
+    
+// })
+// world.addBody(cubeBody)
+
+// bodies.push(cubeBody)
+bodies.push(BallBody)
+
+
+
+
+
+
+self.addEventListener('message', (event) => {
+    const { timeStep, positions, quaternions } = event.data;
+
+    // Check if positions and quaternions are defined
+        console.log(positions[0])
+
+      // Step the world
+      console.log('updated')
+      world.fixedStep(timeStep);
+
+      // Copy the cannon.js data into the buffers
+      for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i];
+
+        positions[i * 3 + 0] = body.position.x;
+        positions[i * 3 + 1] = body.position.y;
+        positions[i * 3 + 2] = body.position.z;
+        quaternions[i * 4 + 0] = body.quaternion.x;
+        quaternions[i * 4 + 1] = body.quaternion.y;
+        quaternions[i * 4 + 2] = body.quaternion.z;
+        quaternions[i * 4 + 3] = body.quaternion.w;
+      
+
+      // Send data back to the main thread
+      self.postMessage(
+        {
+          positions:positions,
+          quaternions:quaternions,
+        },
+        // Specify that we want actually transfer the memory, not copy it over. This is faster.
+        [positions.buffer, quaternions.buffer]
+      );
+    }
+});
+
+
+// document.getElementById("BallButton").addEventListener("click",  function() {
+//   BallBody.applyForce(
+//     new CANNON.Vec3(-2000000,0,0),
+//     new CANNON.Vec3(0,0,0)
+//   )
+//   )
+// });
