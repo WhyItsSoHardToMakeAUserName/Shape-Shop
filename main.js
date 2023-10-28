@@ -52,25 +52,31 @@ renderer.render(scene,camera);
 
 //ball
 const Ball = new THREE.Mesh(
-  new THREE.SphereGeometry(5,150,200),
+  new THREE.SphereGeometry(5),
   new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
   )
 
+const testCube = new THREE.Mesh(
+  new THREE.BoxGeometry(15,15,15),
+  new THREE.MeshStandardMaterial({color:0x000000,roughness:0,metalness:0.5})
+)
 
-//cube
-// var Cube;
-// gltfLoader.load('./assets/scene.gltf',function(gltf){
-//   const model = gltf.scene;
-//   model.scale.set(5,5,5);
-//   scene.add(model);
-//   Cube = model;
-//   Cube.castShadow = true
-//   Cube.rotateZ(90)
-// })
-// if (Cube) {
-//   spotLight.target = Cube;
-// }
-// meshes.push(Cube)
+
+
+var Cube;
+gltfLoader.load('./assets/scene.gltf',function(gltf){
+  const model = gltf.scene;
+  model.scale.set(5,5,5);
+  scene.add(model);
+  Cube = model;
+  Cube.castShadow = true
+  Cube.rotateZ(90)
+})
+if (Cube) {
+  spotLight.target = Cube;
+}
+// // meshes.push(Cube)
+meshes.push(testCube)
 meshes.push(Ball)
 
 
@@ -91,7 +97,7 @@ const wall = new THREE.Mesh(wallGeometry,wallMaterial)
 
 plane.receiveShadow = true;
 wall.receiveShadow = true;
-scene.add(plane,wall,Ball)
+scene.add(plane,wall,Ball,testCube)
 
 
 //lights
@@ -115,7 +121,7 @@ targetObject.position.set(-window.innerWidth*0.01,12,30);
 
 
 spotLight.angle = 1570*0.00028
-scene.add(spotLight,targetObject,directionalLight)
+scene.add(spotLight,targetObject,directionalLight,ambLight)
 
 const controls = new OrbitControls(camera,renderer.domElement)
 
@@ -123,23 +129,29 @@ const controls = new OrbitControls(camera,renderer.domElement)
 function requestDataFromWorker() {
   if (Ball) { // Ensure Cube is defined
     sendTime = performance.now();
+
+    // Create new Float32Arrays to avoid ArrayBuffer transfer issues
+    const newPositionArray = new Float32Array(2 * 3);
+    const newQuaternionArray = new Float32Array(2 * 4);
+
+    // Send the new arrays to the worker
     worker.postMessage(
       {
         timeStep,
-        positions,
-        quaternions,
+        positions: newPositionArray,
+        quaternions: newQuaternionArray,
       },
-      // Specify that we want actually transfer the memory, not copy it over. This is faster.
-      [positions.buffer, quaternions.buffer]
+      [newPositionArray.buffer, newQuaternionArray.buffer]
     );
   }
-};
+}
+
 
 worker.addEventListener('message', (event) => {
   // Get fresh data from the worker
   positions = event.data.positions
   quaternions = event.data.quaternions
-  console.log("working")
+
   // Update the three.js meshes
   for (let i = 0; i < meshes.length; i++) {
     meshes[i].position.set(positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2])
@@ -159,12 +171,11 @@ worker.addEventListener('message', (event) => {
 })
 
 
+
+
 requestDataFromWorker()
 
-
 function animate() {
-  console.log('animate')
-  worker.postMessage("Hello from the main thread!");
   requestAnimationFrame(animate);
 
   controls.update
