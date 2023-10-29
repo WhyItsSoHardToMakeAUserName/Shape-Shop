@@ -41,6 +41,8 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xedf1f9,0)
+renderer.toneMapping = THREE.ReinhardToneMapping
+renderer.toneMappingExposure = 2.3
 renderer.shadowMap.enabled = true;
 camera.updateProjectionMatrix();
 
@@ -60,20 +62,45 @@ const Ball = new THREE.Mesh(
 
 meshes.push(Ball)
 var Cube;
-gltfLoader.load('./assets/scene.gltf',function(gltf){
+gltfLoader.load('./assets/CubeCompanion/scene.gltf',function(gltf){
   const model = gltf.scene;
   model.scale.set(5,5,5);
   scene.add(model);
   Cube = model;
   Cube.castShadow = true
   Cube.rotateZ(90)
+  Cube.traverse(n =>{
+    if(n.isMesh){
+      n.castShadow = true;
+      n.receiveShadow = true;
+      if(n.material.map) n.material.map.anisotropy = 16;
+    }
+  })
+  spotLight.target = Cube;
   meshes.push(Cube)
 })
-if (Cube) {
-  spotLight.target = Cube;
-}
+
 // // meshes.push(Cube)
 
+//background
+var bg;
+gltfLoader.load('./assets/Backrooms/scene.gltf', function (gltf) {
+  const model = gltf.scene;
+  model.scale.set(12, 12, 12);
+  scene.add(model);
+  bg = model;
+  
+  // Check if the model has materials and iterate through them
+  bg.traverse((child) => {
+    if (child.isMesh) {
+      // Disable lighting for each material
+      child.emissive = new THREE.Color(0.01); // You can use white emissive color to disable lighting
+      child.needsUpdate = true;
+      child.SpotLight.color(0) // Ensure material updates
+
+    }
+  });
+});
 
 
 //plane
@@ -84,23 +111,22 @@ const plane = new THREE.Mesh(
 plane.rotateX(-Math.PI/2)
 
 
-//wall
-const wallGeometry = new THREE.PlaneGeometry(600,600)
-const wallMaterial = new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0.5})
-const wall = new THREE.Mesh(wallGeometry,wallMaterial)
 
 
 plane.receiveShadow = true;
-wall.receiveShadow = true;
-scene.add(plane,wall,Ball)
+
+scene.add(plane,Ball)
 
 
 //lights
 const pointLight = new THREE.PointLight(0xffffff,5000)
-const ambLight = new THREE.AmbientLight(0xffffff)
+const ambLight = new THREE.AmbientLight(0x666666)
 const spotLight = new THREE.SpotLight(0xffffff,5000,100,1,0.3)
-const directionalLight = new THREE.DirectionalLight(0xffffff,0.005)
+const directionalLight = new THREE.DirectionalLight(0xffffff,1.5)
 spotLight.castShadow = true
+spotLight.shadow.bias = -0.0001;
+spotLight.shadow.mapSize.width = 1024*4
+spotLight.shadow.mapSize.height = 1024*4
 
 pointLight.position.set (30,30,30)
 spotLight.position.set (-window.innerWidth*0.005,50,40)
@@ -116,11 +142,11 @@ targetObject.position.set(-window.innerWidth*0.01,12,30);
 
 
 spotLight.angle = 1570*0.00028
-scene.add(spotLight,targetObject,directionalLight,ambLight)
+scene.add(spotLight,targetObject,ambLight)
 
 const controls = new OrbitControls(camera,renderer.domElement)
 
-
+const windowWidth = window.innerWidth;
 function requestDataFromWorker() {
     sendTime = performance.now();
 
@@ -134,6 +160,7 @@ function requestDataFromWorker() {
         timeStep,
         positions: newPositionArray,
         quaternions: newQuaternionArray,
+        windowWidth,
       },
       [newPositionArray.buffer, newQuaternionArray.buffer]
     );
@@ -173,9 +200,6 @@ function animate() {
   controls.update
   renderer.render(scene,camera);
 
-  if (Ball) {
-    spotLight.target = Ball;
-  }
 
   // spotLight.position.setX(cubeBody.position.x+10)
   if( window.innerWidth<=1570 && window.innerWidth >=785)spotLight.angle = window.innerWidth*0.00028;

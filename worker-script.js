@@ -19,21 +19,27 @@ const BallBody = new CANNON.Body({
 });
 world.addBody(BallBody);
 
-const cubeBody = new CANNON.Body({
-    shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5)),
-    mass: 10000,
-    position: new CANNON.Vec3(-1440 * 0.001 - 48, 5, 30)
-});
-world.addBody(cubeBody);
+
 
 bodies.push(BallBody);
-bodies.push(cubeBody);
+
+
+let windowWidthReceived = 0;
 
 self.addEventListener('message', (event) => {
-    const { timeStep, positions, quaternions } = event.data;
+    const { timeStep, positions, quaternions,windowWidth} = event.data;
 
     // Check if positions and quaternions are defined
-
+    if(windowWidthReceived == 0){
+        windowWidthReceived = 1;
+        const cubeBody = new CANNON.Body({
+            shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5)),
+            mass: 10000,
+            position: new CANNON.Vec3(-windowWidth * 0.001 - 48, 50, 30)
+        });
+        world.addBody(cubeBody);
+        bodies.push(cubeBody);
+    }
 
     // Step the world
 
@@ -66,9 +72,9 @@ self.addEventListener('message', (event) => {
 });
 
 // document.getElementById("BallButton").addEventListener("click",  function() {
-  BallBody.applyForce(
-    new CANNON.Vec3(-2000000,0,0),
-    new CANNON.Vec3(0,0,0)
-  )
+//   BallBody.applyForce(
+//     new CANNON.Vec3(-2000000,0,0),
+//     new CANNON.Vec3(0,0,0)
+//   )
 //   )
 // });
