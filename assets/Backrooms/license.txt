@@ -1,6 +1,6 @@
 Model Information:
-* title:	Original Backrooms
-* source:	https://sketchfab.com/3d-models/original-backrooms-e5c6b30995ff442d9852a1dd697aaef1
+* title:	Backrooms With Baked Textures
+* source:	https://sketchfab.com/3d-models/backrooms-with-baked-textures-74e9508c517e43b8b9dd71fd29f95f95
 * author:	Huuxloc (https://sketchfab.com/rjh41)
 
 Model License:
@@ -8,4 +8,4 @@ Model License:
 * requirements:	Author must be credited. Commercial use is allowed.
 
 If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
-This work is based on "Original Backrooms" (https://sketchfab.com/3d-models/original-backrooms-e5c6b30995ff442d9852a1dd697aaef1) by Huuxloc (https://sketchfab.com/rjh41) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+This work is based on "Backrooms With Baked Textures" (https://sketchfab.com/3d-models/backrooms-with-baked-textures-74e9508c517e43b8b9dd71fd29f95f95) by Huuxloc (https://sketchfab.com/rjh41) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
