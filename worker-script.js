@@ -19,8 +19,6 @@ const BallBody = new CANNON.Body({
 });
 world.addBody(BallBody);
 
-
-
 bodies.push(BallBody);
 
 
@@ -35,7 +33,7 @@ self.addEventListener('message', (event) => {
         const cubeBody = new CANNON.Body({
             shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5)),
             mass: 10000,
-            position: new CANNON.Vec3(-windowWidth * 0.001 - 48, 50, 30)
+            position: new CANNON.Vec3(50 , 50,-50)
         });
         world.addBody(cubeBody);
         bodies.push(cubeBody);

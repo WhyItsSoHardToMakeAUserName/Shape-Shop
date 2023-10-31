@@ -2,35 +2,41 @@ import './style.css'
 
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-
+import * as TWEEN from 'tween.js'
+import * as STATS from 'stats.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import { Vec3 } from 'cannon-es';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+// Create a basic Tween
+const tween = new TWEEN.Tween({ x: 0 })
+  .to({ x: 100 }, 1000) // Animate 'x' from 0 to 100 over 1000 milliseconds
+  .easing(TWEEN.Easing.Quadratic.Out) // Use a specific easing function
+  .onUpdate(function (object) {
+    // This function is called on each animation frame with the current 'x' value
+    console.log(object.x);
+  })
+  .start(); // Start the animation
+
+
 const gltfLoader = new GLTFLoader();
-
 const scene = new THREE.Scene();
+var fps = new STATS();
+fps.showPanel(0);
+document.body.appendChild(fps.dom);
 
 
-const N = 2
-let positions = new Float32Array(2 * 3);
-let quaternions = new Float32Array(2 * 4);
-positions.fill(1);
-quaternions.fill(1);
-console.log(positions[0])
+const PhysicsMeshNumber = 2
+const meshes = []
+
+let positions = new Float32Array(PhysicsMeshNumber * 3);
+let quaternions = new Float32Array(PhysicsMeshNumber * 4);
 
 const worker = new Worker('worker-script.js',{type:"module"});
-
 let sendTime
-const meshes = []
-// -20.81
+
 
 const timeStep = 1/60;
-const maxSubSteps = 3;
-const interval = 1000 / 60;
-
-const sWidth = window.innerWidth
-const sHeight = window.innerHeight
 
 const camera = new THREE.PerspectiveCamera( 75 , window.innerWidth/window.innerHeight , 0.1 ,1000);
 
@@ -46,7 +52,7 @@ renderer.toneMappingExposure = 2.3
 renderer.shadowMap.enabled = true;
 camera.updateProjectionMatrix();
 
-camera.position.set(3.2,25,75 )
+camera.position.set(33.05096611496278,16.429911561969387,-81.41564670496722 )
 
 scene.background = new THREE.Color(0xeeeeee)
 
@@ -57,10 +63,8 @@ const Ball = new THREE.Mesh(
   new THREE.SphereGeometry(5),
   new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
   )
-
-
-
 meshes.push(Ball)
+
 var Cube;
 gltfLoader.load('./assets/CubeCompanion/scene.gltf',function(gltf){
   const model = gltf.scene;
@@ -80,53 +84,49 @@ gltfLoader.load('./assets/CubeCompanion/scene.gltf',function(gltf){
   meshes.push(Cube)
 })
 
-// // meshes.push(Cube)
-
-//background
-var bg;
+//backrooms (background)
+var background;
 gltfLoader.load('./assets/Backrooms/scene.gltf', function (gltf) {
   const model = gltf.scene;
   model.scale.set(12, 12, 12);
   scene.add(model);
-  bg = model;
-  
-  // Check if the model has materials and iterate through them
-  bg.traverse((child) => {
-    if (child.isMesh) {
-      // Disable lighting for each material
-      child.emissive = new THREE.Color(0.01); // You can use white emissive color to disable lighting
-      child.needsUpdate = true;
-      child.SpotLight.color(0) // Ensure material updates
+  background = model;
+  console.log(logObjectHierarchy(background))
 
+  background.traverse((object) => {
+    if (object.isMesh) {
+      const standardMaterial = new THREE.MeshStandardMaterial();
+      if (object.material.map) {
+        standardMaterial.map = object.material.map;
+      }
+      // Disable lighting for each material
+      object.emissive = new THREE.Color(0.01); // You can use white emissive color to disable lighting
+      object.needsUpdate = true;
+      object.material = standardMaterial
     }
   });
 });
 
-
-//plane
-const plane = new THREE.Mesh(
-  new THREE.PlaneGeometry(600,600),
-  new THREE.MeshStandardMaterial({color:0xffffff,roughness:0,metalness:0.5})
-)
-plane.rotateX(-Math.PI/2)
-
-
-
-
-plane.receiveShadow = true;
-
-scene.add(plane,Ball)
+scene.add(Ball)
 
 
 //lights
 const pointLight = new THREE.PointLight(0xffffff,5000)
-const ambLight = new THREE.AmbientLight(0x666666)
+const ambLight = new THREE.AmbientLight(0x666666,10)
 const spotLight = new THREE.SpotLight(0xffffff,5000,100,1,0.3)
 const directionalLight = new THREE.DirectionalLight(0xffffff,1.5)
 spotLight.castShadow = true
 spotLight.shadow.bias = -0.0001;
 spotLight.shadow.mapSize.width = 1024*4
 spotLight.shadow.mapSize.height = 1024*4
+
+
+let isLightFlickering = true;
+let targetIntensity = 10;
+let flickerDuration = 300;
+let lastFlickerTime = 0;
+let flickerSpeedUpRate = 0.95;
+
 
 pointLight.position.set (30,30,30)
 spotLight.position.set (-window.innerWidth*0.005,50,40)
@@ -165,7 +165,6 @@ function requestDataFromWorker() {
       [newPositionArray.buffer, newQuaternionArray.buffer]
     );
 }
-
 worker.addEventListener('message', (event) => {
   // Get fresh data from the worker
   positions = event.data.positions
@@ -186,22 +185,19 @@ worker.addEventListener('message', (event) => {
   // otherwise run it immediatly
   const delay = timeStep * 1000 - (performance.now() - sendTime)
   setTimeout(requestDataFromWorker, Math.max(delay, 0))
-  console.log("message back from worker")
 })
-
-
-
-
 requestDataFromWorker()
+
+
 
 function animate() {
   requestAnimationFrame(animate);
 
   controls.update
+  fps.update();
   renderer.render(scene,camera);
+  TWEEN.update();
 
-
-  // spotLight.position.setX(cubeBody.position.x+10)
   if( window.innerWidth<=1570 && window.innerWidth >=785)spotLight.angle = window.innerWidth*0.00028;
   //camera position log
   const cameraPosition = camera.position;
@@ -210,12 +206,9 @@ function animate() {
   const cameraZ = cameraPosition.z;
   // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
 
-  
+
 }
-
 animate()
-//(-40,14,30)
-
 
 window.addEventListener('resize', () => {
   const newWidth = window.innerWidth;
@@ -228,55 +221,15 @@ window.addEventListener('resize', () => {
     spotLight.position.setX(-newWidth*0.005)
 
   }
-
-  
-  
-
 });
 
+function logObjectHierarchy(parentObject, depth = 0, hierarchy = '') {
+  hierarchy += ' '.repeat(depth * 4) + parentObject.name + '\n';
 
-// function delayedLoop(iterations, delay) {
-//   let count = 0;
-
-//   function loop() {
-//     if (count < iterations) {
-//         setTimeout(loop, delay);
-//         cubeBody.applyForce(
-//           new CANNON.Vec3(500000,0,0),
-//           new CANNON.Vec3(0,0,0)
-//         )
-
-//         count++;
-//       }
-//   }
-
-//   loop();
-// }
-
-// delayedLoop(5,970)
-
-// Ball Launch button
-
-
-
-
-
-
-//fps counter
-
-const times = [];
-let fps;
-
-function refreshLoop() {
-  window.requestAnimationFrame(() => {
-    const now = performance.now();
-    while (times.length > 0 && times[0] <= now - 1000) {
-      times.shift();
-    }
-    times.push(now);
-    fps = times.length;
-    document.getElementById("fps-counter").textContent = fps
-    refreshLoop();
+  parentObject.children.forEach((child) => {
+    hierarchy = logObjectHierarchy(child, depth + 1, hierarchy);
   });
+
+  return hierarchy;
 }
-refreshLoop();
+
