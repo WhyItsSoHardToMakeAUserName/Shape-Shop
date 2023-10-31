@@ -8,16 +8,6 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import { Vec3 } from 'cannon-es';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-// Create a basic Tween
-const tween = new TWEEN.Tween({ x: 0 })
-  .to({ x: 100 }, 1000) // Animate 'x' from 0 to 100 over 1000 milliseconds
-  .easing(TWEEN.Easing.Quadratic.Out) // Use a specific easing function
-  .onUpdate(function (object) {
-    // This function is called on each animation frame with the current 'x' value
-    console.log(object.x);
-  })
-  .start(); // Start the animation
-
 
 const gltfLoader = new GLTFLoader();
 const scene = new THREE.Scene();
@@ -91,7 +81,7 @@ gltfLoader.load('./assets/Backrooms/scene.gltf', function (gltf) {
   model.scale.set(12, 12, 12);
   scene.add(model);
   background = model;
-  console.log(logObjectHierarchy(background))
+  // console.log(logObjectHierarchy(background))
 
   background.traverse((object) => {
     if (object.isMesh) {
@@ -188,16 +178,30 @@ worker.addEventListener('message', (event) => {
 })
 requestDataFromWorker()
 
+ambLight.intensity = 200
 
+function LightFlickering(AmbientLight,MaxIntensity,MinIntensity,duration){
+  // console.log(Math.random()*MaxIntensity);
+  const myObject = { Intensity: AmbientLight.intensity };
+  var Tween = new TWEEN.Tween(myObject)
+  .to({Intensity:Math.random()*MaxIntensity},duration)
+  .onUpdate(function () {
+    console.log(myObject.Intensity)
 
+    AmbientLight.intensity = myObject.Intensity;
+  })
+  .repeat(Infinity)
+  .start()
+}
+LightFlickering(ambLight,300,0,500);
 function animate() {
   requestAnimationFrame(animate);
 
   controls.update
   fps.update();
-  renderer.render(scene,camera);
   TWEEN.update();
-
+  renderer.render(scene,camera);
+  
   if( window.innerWidth<=1570 && window.innerWidth >=785)spotLight.angle = window.innerWidth*0.00028;
   //camera position log
   const cameraPosition = camera.position;
