@@ -16,18 +16,6 @@
   </head>
   <body>
     
-    <!-- <header >
-        
-      <div class="nav-bar-top">
-          <div class="left-fill"></div>
-
-          <img src="photos/shapo-logos_black.png" alt="" class="logo">
-          
-          <div class="right-fill"></div>
-      </div>
-      <div class="nav-bar-bot"></div>
-
-    </header> -->
 
   <main>
       <div class="fps-counter" id="fps-counter"></div>
@@ -85,7 +73,7 @@
             <span>of</span>
             <span>geometry.</span>
           </p>
-          <button id="BallButton">
+          <button id="loadButton" >
             <p>Proceed</p>
             <svg stroke-width="4" stroke="currentColor" viewBox="0 0 24 24" fill="none" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linejoin="round" stroke-linecap="round"></path>
@@ -93,13 +81,22 @@
         </button>
         </div>
       </div>
+      <div id="content"></div>
   </main>
   
 
 
   <script type="module" src="/main.js"></script>
   <script type="module" src="/worker-script.js"  id="worker1"></script>
-  
+  <script>
+    document.getElementById("loadButton").addEventListener("click", function() {
+    // URL of the HTML file you want to load
+    const url = "/main_page/main.html";
+
+    // Navigate to the new URL
+    window.location.href = url;
+});
+  </script>
 </body>
   </body>
 </html>
