@@ -2,33 +2,32 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
+
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / (window.innerHeight), 0.1, 1000 );
+
 scene.background = new THREE.Color('lightblue')
+camera.position.set(0,5,14)
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),antialias: true
 });
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 2.3
+renderer.shadowMap.enabled = true;
+renderer.setSize( window.innerWidth, window.innerHeight );
+const controls = new OrbitControls(camera,renderer.domElement)
+
 const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(100,100,100),
-    new THREE.MeshLambertMaterial({color:0xffffff})
+    new THREE.MeshLambertMaterial({color:new THREE.Color('lightblue')})
 );
 plane.receiveShadow = true
 plane.rotateX(-Math.PI/2)
-const wall = new THREE.Mesh(
-    new THREE.PlaneGeometry(10,10,10),
-    new THREE.MeshLambertMaterial({color:0xffffff})
-)
+scene.add(plane)
 
-const helper = new THREE.AxesHelper(5);
-
-camera.position.set(0,5,14)
-renderer.setSize( window.innerWidth, window.innerHeight );
-scene.add(plane,helper,wall)
 const world = new CANNON.World();
-    world.gravity.set(0, -9.82, 0); // Set gravity (m/s²)
-
-    // Create a ground plane
+    world.gravity.set(0, -9.82, 0);
 
     const planeBody = new CANNON.Body({
         shape: new CANNON.Plane(),
@@ -37,50 +36,45 @@ const world = new CANNON.World();
     planeBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
     world.addBody(planeBody);
 
-    // Create a sphere
-    const sphereShape = new CANNON.Sphere(1); // Radius of 1
-    const sphereBody = new CANNON.Body({ mass: 5 }); // Mass of 5
-    sphereBody.addShape(sphereShape);
-    sphereBody.position.set(0, 5, 0); // Initial position
-    world.addBody(sphereBody);
+    const testCube = new CANNON.Body({
+        shape: new CANNON.Box(new CANNON.Vec3(1,1,1)),
+        position: new CANNON.Vec3(0,20,0),
+        mass:1
+    })
+    const testCubeMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(2,2,2),
+        new THREE.MeshLambertMaterial({color:0xa2d2ff})
+    );
+    testCubeMesh.castShadow = true;
+    world.addBody(testCube);
+    scene.add(testCubeMesh);
 
-    // Create a Three.js sphere mesh
-    const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-    const sphereMaterial = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-    const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphereMesh.castShadow = true
-    scene.add(sphereMesh);
+const hemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1.6) //color-->color-->intensity
+const directionalLight = new THREE.DirectionalLight(0xffffff,0.5) //color-->intensity
 
-const pointLight = new THREE.PointLight(0xffffff,5000)
-const ambLight = new THREE.AmbientLight(0x666666,10)
-const spotLight = new THREE.SpotLight(0xffffff,200,10,1,0.1)
-const directionalLight = new THREE.DirectionalLight(0xffffff,1.5)
-const hemisphereLight = new THREE.HemisphereLight(0xffffff)
-hemisphereLight.intensity = 1.35
-spotLight.castShadow = true
-spotLight.shadow.bias = -0.0001;
-spotLight.shadow.mapSize.width = 1024*4
-spotLight.shadow.mapSize.height = 1024*4
-spotLight.position.set(5,5,5)
-scene.add(spotLight,hemisphereLight)
+directionalLight.position.set(20,20,15)
+directionalLight.castShadow = true 
+directionalLight.shadow.radius = 9
 
-const controls = new OrbitControls(camera,renderer.domElement)
+const drhelper = new THREE.DirectionalLightHelper(directionalLight,5);
+
+scene.add(directionalLight, hemisphereLight,drhelper)
+
 function animate() {
     requestAnimationFrame(animate);
     controls.update
     world.step(1 / 60);
 
-            // Update the Three.js sphere position
-            sphereMesh.position.copy(sphereBody.position);
+    testCubeMesh.position.copy(testCube.position);
+    testCubeMesh.quaternion.copy(testCube.quaternion)
     renderer.render(scene,camera);
   
 
-
-    const cameraPosition = camera.position;
-  const cameraX = cameraPosition.x;
-  const cameraY = cameraPosition.y;
-  const cameraZ = cameraPosition.z;
-  console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
-  }
-  animate()
+    // const cameraPosition = camera.position;
+    // const cameraX = cameraPosition.x;
+    // const cameraY = cameraPosition.y;
+    // const cameraZ = cameraPosition.z;
+    // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
+}
+animate()
   
