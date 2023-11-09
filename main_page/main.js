@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
+const N=10;
+const meshes = [];
+const bodies = []
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / (window.innerHeight), 0.1, 1000 );
@@ -46,8 +49,27 @@ const world = new CANNON.World();
         new THREE.MeshLambertMaterial({color:0xa2d2ff})
     );
     testCubeMesh.castShadow = true;
-    world.addBody(testCube);
-    scene.add(testCubeMesh);
+    // world.addBody(testCube);
+    // scene.add(testCubeMesh);
+    for(let i=0;i<N;i++){
+        const testCube = new CANNON.Body({
+            shape: new CANNON.Box(new CANNON.Vec3(1,1,1)),
+            position: new CANNON.Vec3(0,20,0),
+            mass:1
+        })
+        const testCubeMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(2,2,2),
+            new THREE.MeshLambertMaterial({color:0xa2d2ff})
+        );
+        testCubeMesh.castShadow = true;
+        testCube.position.set(Math.random()*3 - 0.5, i * 2.5 + 10, Math.random()*3 - 0.5);
+        
+        meshes.push(testCubeMesh);
+        bodies.push(testCube);
+        scene.add(testCubeMesh);
+        world.addBody(testCube);
+        testCube.applyForce(new CANNON.Vec3(0,-1000,0))
+    }
 
 const hemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1.6) //color-->color-->intensity
 const directionalLight = new THREE.DirectionalLight(0xffffff,0.5) //color-->intensity
@@ -65,8 +87,7 @@ function animate() {
     controls.update
     world.step(1 / 60);
 
-    testCubeMesh.position.copy(testCube.position);
-    testCubeMesh.quaternion.copy(testCube.quaternion)
+    renderMeshes();
     renderer.render(scene,camera);
   
 
@@ -77,4 +98,11 @@ function animate() {
     // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
 }
 animate()
+
+function renderMeshes(){
+    for(let i=0; i<N;i++){
+        meshes[i].position.copy(bodies[i].position);
+        meshes[i].quaternion.copy(bodies[i].quaternion);
+    }
+}
   
