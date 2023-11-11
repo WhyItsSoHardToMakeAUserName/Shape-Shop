@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="items.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
                 
             </div>
             <div class="nav_mid">
-                <a href="/Items_page/items.html"><button class="nav_bar_text">Explore</button></a>
+                <a href="/main_page/main.html"><button class="nav_bar_text">Main</button></a>
                 <a href="/index.html"><button class="nav_bar_text">Pricing</button></a>
             </div>
             <div class="nav_fill"></div>
@@ -31,20 +31,26 @@
 
     </header>
     <main>
-        <canvas  id="bg" class="intro-scene"></canvas>
-        <div class="news_scroll">
-            <div class="news_scroll_news">
-                <h1>Choose Your Shape!</h1>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore repellat praesentium magni iure quibusdam ullam inventore eligendi, tempora dolore aspernatur omnis! Suscipit odio animi quis rem consequuntur laborum soluta saepe!</p>
+        <canvas  id="bg" class="intro_scene"></canvas>
+        <div class="sort_bar">
+            <p>Sort by</p>
+            <p class="spacing">|</p>
+            <button>Price</button>
+            <p class="spacing">|</p>
+            <button>Brand</button>
+            <p class="spacing">|</p>
+            <button>Popularity</button>
+        </div>
+        <div class="filter_bar">
+            <div class="left_filter_bar">
+                <p style="margin: 0;">Catalogue</p>
             </div>
-            <div class="explore_button_div">
-                <button class="explore_button">
-                    <p class="explore_button_text">Explore</p>
-                </button>
+            <div class="right_filter_bar">
+                <button class="filter_button">Filter By</button>
             </div>
         </div>
     </main>
 
 </body>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="items.js"></script>
 </html>
