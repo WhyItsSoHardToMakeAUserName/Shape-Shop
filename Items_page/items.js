@@ -9,8 +9,9 @@ const meshes = [];
 let scenes = [];
 let renderers = [];
 let cameras = [];
+let controlses = []
 
-const colors = [0xe63946, 0xf1faee, 0xa8dadc, 0x457b9d, 0x1d3557];
+const colors = [0x0d1b2a, 0x1b263b, 0x415a77, 0x778da9, 0xe0e1dd];
 const bgColor = '#e5e5e5';
 const Width = 200;
 const Height =250;
@@ -99,6 +100,7 @@ function animate() {
   
     for(let i=0;i<renderers.length;i++){
         renderers[i].render(scenes[i],cameras[i]);
+        controlses[i].update
     }
     
     // const cameraPosition = camera.position;
@@ -124,19 +126,34 @@ function create_product_cards(product){
     div.appendChild(product_name);
     div.appendChild(price);
     
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(product.scene.background_color)
     const renderer = new THREE.WebGLRenderer({
-        canvas: canvas,antialias: true
+        canvas: canvas,antialias: true,
+        width:Width,
+        height:Height
     });
+    renderer.setSize(Width,Height)
     const camera = new THREE.PerspectiveCamera( 75, Width / Height, 0.1, 1000 );
-    camera.position.set(10,10,10)
+    camera.position.set(0,10,20)
+
+    const controls = new OrbitControls(camera,renderer.domElement)
+
     const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,10);
     scene.add(HemisphereLight);
     scenes.push(scene);
     cameras.push(camera);
     renderers.push(renderer);
-    console.log(scene);
+    controlses.push(controls);
+    const Sphere = new THREE.Mesh(
+        new THREE[product.name],
+        new THREE.MeshLambertMaterial({color:0xffffff})
+    )
+    scene.add(Sphere)
+
 
     document.getElementById('product_cards_container').appendChild(div);
+
+    
 }

@@ -1,17 +1,33 @@
 [
     {
-        "name":"Box",
+        "name":"BoxGeometry",
         "price":0,
         "scene":{
-            "background_color":"#000000",
+            "background_color":"#415a77",
             "camera-position":{ "x": 0, "y": 0, "z": 0 }
         }
     },
     {
-        "name":"Sphere",
+        "name":"SphereGeometry",
         "price":12.5,
         "scene":{
-            "background_color":"#000000",
+            "background_color":"#1b263b",
+            "camera-position":{ "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    {
+        "name":"BoxGeometry",
+        "price":0,
+        "scene":{
+            "background_color":"#778da9",
+            "camera-position":{ "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    {
+        "name":"SphereGeometry",
+        "price":12.5,
+        "scene":{
+            "background_color":"#e0e1dd",
             "camera-position":{ "x": 0, "y": 0, "z": 0 }
         }
     }
