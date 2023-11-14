@@ -13,7 +13,7 @@ let controlses = []
 
 const colors = [0x0d1b2a, 0x1b263b, 0x415a77, 0x778da9, 0xe0e1dd];
 const bgColor = '#e5e5e5';
-const Width = 200;
+export const Width = 200;
 const Height =250;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, Width / Height, 0.1, 1000 );
@@ -120,7 +120,7 @@ function create_product_cards(product){
     const price = document.createElement('p');
     product_name.textContent = product.name;
     product_name.className = 'product_name';
-    price.textContent = product.price;
+    price.textContent = product.price+'$';
     price.className = 'price';
     div.appendChild(canvas);
     div.appendChild(product_name);
@@ -157,3 +157,12 @@ function create_product_cards(product){
 
     
 }
+var grid_container = document.getElementById('product_cards_container');
+resize_handler()
+function resize_handler(){
+    let number_of_grid_items = Math.floor(window.innerWidth/(Width+100));
+    let container_width = grid_container.clientWidth;
+    console.log(container_width);
+    grid_container.style.columnGap = (container_width-(Width+100)*number_of_grid_items)/(number_of_grid_items-1)+'px';
+}
+window.addEventListener('resize',resize_handler);
