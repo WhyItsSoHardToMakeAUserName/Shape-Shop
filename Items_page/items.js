@@ -61,8 +61,8 @@ ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
         scene.add(testCubeMesh);
 
 const hemisphereLight = new THREE.HemisphereLight(0xbde0fe,undefined,8) //color-->color-->intensity
-const directionalLight = new THREE.DirectionalLight(0xffffff,1) //color-->intensity
 const spotlight = new THREE.SpotLight(0xffffff,1);
+const directionalLight = new THREE.DirectionalLight(0xffffff,1) //color-->intensity
 directionalLight.position.set(20,20,15)
 
 const drhelper = new THREE.DirectionalLightHelper(directionalLight,5,0x000000);
@@ -76,6 +76,26 @@ scene.add(directionalLight, hemisphereLight,spotlight)
 
 
 
+
+
+fetchAndCreateProductCards();
+
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update
+    renderer.render(scene,camera);
+  
+    for(let i=0;i<renderers.length;i++){
+        renderers[i].render(scenes[i],cameras[i]);
+        controlses[i].update
+    }
+        // const cameraPosition = camera.position;
+    // const cameraX = cameraPosition.x;
+    // const cameraY = cameraPosition.y;
+    // const cameraZ = cameraPosition.z;
+    // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
+}
+animate()
 
 async function fetchAndCreateProductCards() {
     try {
@@ -91,27 +111,6 @@ async function fetchAndCreateProductCards() {
       console.error('Error fetching or parsing JSON:', error);
     }
   }
-fetchAndCreateProductCards();
-
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update
-    renderer.render(scene,camera);
-  
-    for(let i=0;i<renderers.length;i++){
-        renderers[i].render(scenes[i],cameras[i]);
-        controlses[i].update
-    }
-    
-    // const cameraPosition = camera.position;
-    // const cameraX = cameraPosition.x;
-    // const cameraY = cameraPosition.y;
-    // const cameraZ = cameraPosition.z;
-    // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
-}
-animate()
-
-
 function create_product_cards(product){
     const div = document.createElement('div')
     div.className = 'product_card';
@@ -126,6 +125,10 @@ function create_product_cards(product){
     div.appendChild(product_name);
     div.appendChild(price);
     
+    div.addEventListener('click',function(){
+        window.location.href = './product.html'
+    });
+    
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(product.scene.background_color)
@@ -136,21 +139,23 @@ function create_product_cards(product){
     });
     renderer.setSize(Width,Height)
     const camera = new THREE.PerspectiveCamera( 75, Width / Height, 0.1, 1000 );
-    camera.position.set(0,10,20)
+    camera.position.set(product.scene.camera_position.x,product.scene.camera_position.y,product.scene.camera_position.z)
 
     const controls = new OrbitControls(camera,renderer.domElement)
 
-    const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,10);
-    scene.add(HemisphereLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff,8) //color-->intensity
+    directionalLight.position.set(20,20,15)
+    const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);
+    scene.add(HemisphereLight,directionalLight);
     scenes.push(scene);
     cameras.push(camera);
     renderers.push(renderer);
     controlses.push(controls);
-    const Sphere = new THREE.Mesh(
+    const Mesh = new THREE.Mesh(
         new THREE[product.name],
-        new THREE.MeshLambertMaterial({color:0xffffff})
+        new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
     )
-    scene.add(Sphere)
+    scene.add(Mesh)
 
 
     document.getElementById('product_cards_container').appendChild(div);
@@ -158,11 +163,11 @@ function create_product_cards(product){
     
 }
 var grid_container = document.getElementById('product_cards_container');
-resize_handler()
 function resize_handler(){
-    let number_of_grid_items = Math.floor(window.innerWidth/(Width+100));
-    let container_width = grid_container.clientWidth;
-    console.log(container_width);
-    grid_container.style.columnGap = (container_width-(Width+100)*number_of_grid_items)/(number_of_grid_items-1)+'px';
+    let computedStyles = window.getComputedStyle(grid_container);
+    let container_width = grid_container.getBoundingClientRect().width-2*parseFloat(computedStyles.paddingLeft);
+    let number_of_grid_items = Math.floor(container_width/(Width+100));
+    grid_container.style.columnGap = (container_width-(number_of_grid_items*(Width+100)))/(number_of_grid_items-1)+'px'
 }
+resize_handler()
 window.addEventListener('resize',resize_handler);

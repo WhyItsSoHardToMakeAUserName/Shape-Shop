@@ -97,10 +97,10 @@ footer{
 }
 .product_cards{
     display: grid;
-    padding: 0 clamp(100px,10%,200px);
+    margin: 0 clamp(100px,10%,200px);
     /* max-width: 200px; */
     grid-template-columns: repeat(auto-fill,300px);
 }
 .product_card{
-    padding: 50px 50px;
+    margin: 50px 50px;
 }
