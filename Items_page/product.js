@@ -3,8 +3,6 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {TTFLoader} from 'three/examples/jsm/loaders/TTFLoader';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
-
-const Height = 500;
 let scene,camera,renderer,mesh,controls;
 
 const fontloader = new FontLoader();
@@ -23,7 +21,6 @@ ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
         textMaterial
     );
     textMesh.position.set(-4.5,0,0)
-    textMesh.rotateY(Math.PI/9)
     // textMesh.rotateX(-Math.PI/11)
     // scene.add(textMesh)
 })
@@ -33,6 +30,9 @@ function animate() {
 
 
     renderer.render(scene,camera)
+    if(mesh){
+        mesh.rotation.y+=0.001
+    }
         // const cameraPosition = camera.position;
     // const cameraX = cameraPosition.x;
     // const cameraY = cameraPosition.y;
@@ -55,24 +55,32 @@ async function fetch_json_data(){
         var product_name = urlParams.get('data');
         products.forEach(product => {
             if(product.name == product_name){
+                //scene setup
                 mesh = new THREE.Mesh(
                     new THREE[product.scene.mesh],
                     new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
                     )
+                mesh.position.set(-1,0,-1)
                 scene.add(mesh)
                 console.log(mesh)
                 scene.background = new THREE.Color(product.scene.background_color)
-                camera.position.set(product.scene.camera_position.x,product.scene.camera_position.y,product.scene.camera_position.z)
+                document.body.style.backgroundColor = product.scene.background_color
+                console.log(product.scene.background_color)
+                camera.position.set(0,1.5,3)
                 controls = new OrbitControls(camera,renderer.domElement)
                 const directionalLight = new THREE.DirectionalLight(0xffffff,8) //color-->intensity
                 directionalLight.position.set(20,20,15)
                 const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);
                 scene.add(HemisphereLight,directionalLight);
+
+
+                //html setup
+                document.getElementById('name').textContent = product.name;
+                document.getElementById('price').textContent = product.price+'$';
+                document.getElementById('description').textContent = product.description
             }
             animate()
         });
-        console.log((product_name))
-
     }catch(error){
         console.error("error-caught:",error);
     }

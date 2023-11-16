@@ -7,7 +7,8 @@
             "background_color":"#415a77",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"fca311"
-        }
+        },
+        "description":"Wow nice Cube"
     },
     {
         "name":"Octahedron",
@@ -17,7 +18,8 @@
             "background_color":"#1b263b",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"ffddd2"
-        }
+        },
+        "description":"xdhcgfjvhjbkjbhgvcfdxhcjkljhgfdfhjlgkjvhbjbhvaejndkfbhljke nksbhf njdbhlk wnk"
     },
     {
         "name":"Cone",
@@ -27,7 +29,8 @@
             "background_color":"#778da9",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"edf6f9"
-        }
+        },
+        "description":""
     },
     {
         "name":"Sphere",
@@ -37,6 +40,7 @@
             "background_color":"#e0e1dd",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"bc4749"
-        }
+        },
+        "description":"i dont know sussy"
     }
 ]

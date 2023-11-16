@@ -15,6 +15,8 @@ const colors = [0x0d1b2a, 0x1b263b, 0x415a77, 0x778da9, 0xe0e1dd];
 const bgColor = '#e5e5e5';
 export const Width = 200;
 const Height =250;
+var grid_container = document.getElementById('product_cards_container');
+
 
 fetchAndCreateProductCards();
 
@@ -98,12 +100,11 @@ function create_product_cards(product){
 
     
 }
-var grid_container = document.getElementById('product_cards_container');
 function resize_handler(){
     let computedStyles = window.getComputedStyle(grid_container);
     let container_width = grid_container.getBoundingClientRect().width-2*parseFloat(computedStyles.paddingLeft);
     let number_of_grid_items = Math.floor(container_width/(Width+100));
     grid_container.style.columnGap = (container_width-(number_of_grid_items*(Width+100)))/(number_of_grid_items-1)+'px'
 }
-resize_handler()
 window.addEventListener('resize',resize_handler);
+resize_handler()

@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="items.css">
+    <link rel="stylesheet" href="product.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
-</head>
-<body>
+    <!-- icons -->
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/chevron-right-o.css' rel='stylesheet'>
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/shopping-bag.css' rel='stylesheet'>
+<body id="body">
     <header >
         
         <div class="nav_bar">
@@ -31,7 +33,24 @@
 
     </header>
     <main>
-        <canvas  id="bg" class="intro_scene"></canvas>   
+        <canvas  id="bg" class="intro_scene"></canvas>
+        <div class="menu">
+            <div class="switch_menu_button">
+                <button class="gg-chevron-right-o" ></button>
+            </div>
+            <div class="options_menu" id="options_menu">
+                <h1 class="name" id="name"></h1>
+                <div class="colors_available" id="colors"></div>
+                <price id="price"></price>
+                <p id="description"></p>
+                <div>
+                    <button class="AddToCart">Add to Cart</button>
+                    <p class="gg-shopping-bag"></p>
+                </div>
+               
+            </div>  
+        </div>
+         
     </main>
 </body>
     <script type="module" src="product.js"></script>
