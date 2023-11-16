@@ -42,5 +42,16 @@
             "mesh_color":"bc4749"
         },
         "description":"i dont know sussy"
+    },
+    {
+        "name":"Amr",
+        "price":12.5,
+        "scene":{
+            "mesh":"TorusGeometry",
+            "background_color":"#e0e1dd",
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
+            "mesh_color":"FFC0CB"
+        },
+        "description":"Amrs favourite figure"
     }
 ]
