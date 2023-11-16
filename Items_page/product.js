@@ -4,6 +4,9 @@ import {TTFLoader} from 'three/examples/jsm/loaders/TTFLoader';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
 
+const Height = 500;
+let scene,camera,renderer,mesh,controls;
+
 const fontloader = new FontLoader();
 const ttfloader = new TTFLoader();
 ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
@@ -28,56 +31,49 @@ ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
 function animate() {
     requestAnimationFrame(animate);
 
+
+    renderer.render(scene,camera)
         // const cameraPosition = camera.position;
     // const cameraX = cameraPosition.x;
     // const cameraY = cameraPosition.y;
     // const cameraZ = cameraPosition.z;
     // console.log(`Camera Position: x=${cameraX}, y=${cameraY}, z=${cameraZ}`);
 }
-animate()
-
 fetch_json_data()
 async function fetch_json_data(){
     try{
-        const response = await fetch('product.json');
-        const products = await response.json;
-        console.log(products)
+        const response = await fetch('products.json');
+        const products = await response.json();
+        scene =  new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+        renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('bg'),
+            antialias: true,
+        });
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        var urlParams = new URLSearchParams(window.location.search);
+        var product_name = urlParams.get('data');
+        products.forEach(product => {
+            if(product.name == product_name){
+                mesh = new THREE.Mesh(
+                    new THREE[product.scene.mesh],
+                    new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
+                    )
+                scene.add(mesh)
+                console.log(mesh)
+                scene.background = new THREE.Color(product.scene.background_color)
+                camera.position.set(product.scene.camera_position.x,product.scene.camera_position.y,product.scene.camera_position.z)
+                controls = new OrbitControls(camera,renderer.domElement)
+                const directionalLight = new THREE.DirectionalLight(0xffffff,8) //color-->intensity
+                directionalLight.position.set(20,20,15)
+                const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);
+                scene.add(HemisphereLight,directionalLight);
+            }
+            animate()
+        });
+        console.log((product_name))
+
     }catch(error){
         console.error("error-caught:",error);
     }
-}
-
-function create_product_cards(product){
-    const div = document.createElement('div')
-    div.className = 'product_card';
-    const canvas = document.createElement('canvas');
-
-    div.appendChild(canvas);
-
-
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(product.scene.background_color)
-    const renderer = new THREE.WebGLRenderer({
-        canvas: canvas,antialias: true,
-        width:Width,
-        height:Height
-    });
-    renderer.setSize(Width,Height)
-    const camera = new THREE.PerspectiveCamera( 75, Width / Height, 0.1, 1000 );
-    camera.position.set(product.scene.camera_position.x,product.scene.camera_position.y,product.scene.camera_position.z)
-
-    const controls = new OrbitControls(camera,renderer.domElement)
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff,8) //color-->intensity
-    directionalLight.position.set(20,20,15)
-    const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);
-    scene.add(HemisphereLight,directionalLight);
-
-    const Mesh = new THREE.Mesh(
-        new THREE[product.name],
-        new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
-    )
-    scene.add(Mesh)
-    document.getElementById('product_cards_container').appendChild(div);
 }

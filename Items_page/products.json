@@ -1,46 +1,42 @@
 [
     {
-        "name":"BoxGeometry",
+        "name":"Cube",
         "price":0,
         "scene":{
+            "mesh":"BoxGeometry",
             "background_color":"#415a77",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"fca311"
         }
     },
     {
-        "name":"OctahedronGeometry",
+        "name":"Octahedron",
         "price":12.5,
         "scene":{
+            "mesh":"OctahedronGeometry",
             "background_color":"#1b263b",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"ffddd2"
         }
     },
     {
-        "name":"ConeGeometry",
+        "name":"Cone",
         "price":0,
         "scene":{
+            "mesh":"ConeGeometry",
             "background_color":"#778da9",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"edf6f9"
         }
     },
     {
-        "name":"SphereGeometry",
+        "name":"Sphere",
         "price":12.5,
         "scene":{
+            "mesh":"SphereGeometry",
             "background_color":"#e0e1dd",
             "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
             "mesh_color":"bc4749"
-        }
-    },{
-        "name":"BoxGeometry",
-        "price":0,
-        "scene":{
-            "background_color":"#415a77",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"386641"
         }
     }
 ]
