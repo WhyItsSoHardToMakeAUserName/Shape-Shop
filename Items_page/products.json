@@ -4,44 +4,44 @@
         "price":0,
         "scene":{
             "mesh":"BoxGeometry",
-            "background_color":"#415a77",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"fca311"
+            "background_color":"#fefae0",
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 }
         },
-        "description":"Wow nice Cube"
+        "description":"Wow nice Cube",
+        "colors":["fca311","606c38","283618","dda15e","bc6c25"]
     },
     {
         "name":"Octahedron",
         "price":12.5,
         "scene":{
             "mesh":"OctahedronGeometry",
-            "background_color":"#1b263b",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"ffddd2"
+            "background_color":"#dedbd2",
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 }
         },
-        "description":"xdhcgfjvhjbkjbhgvcfdxhcjkljhgfdfhjlgkjvhbjbhvaejndkfbhljke nksbhf njdbhlk wnk"
+        "description":"xdhcgfjvhjbkjbhgvcfdxhcjkljhgfdfhjlgkjvhbjbhvaejndkfbhljke nksbhf njdbhlk wnk",
+        "colors":["778da9","415a77","1b263b","0d1b2a"]
     },
     {
         "name":"Cone",
         "price":0,
         "scene":{
             "mesh":"ConeGeometry",
-            "background_color":"#778da9",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"edf6f9"
+            "background_color":"#4a5759",
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 }
         },
-        "description":""
+        "description":"",
+        "colors":["b0c4b1","dedbd2","f7e1d7","edafb8"]
     },
     {
         "name":"Sphere",
         "price":12.5,
         "scene":{
             "mesh":"SphereGeometry",
-            "background_color":"#e0e1dd",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"bc4749"
+            "background_color":"#edf6f9",
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 }
         },
-        "description":"i dont know sussy"
+        "description":"i dont know sussy",
+        "colors":["e29578","ffddd2","006d77","83c5be"]
     },
     {
         "name":"Amr",
@@ -49,9 +49,9 @@
         "scene":{
             "mesh":"TorusGeometry",
             "background_color":"#e0e1dd",
-            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 },
-            "mesh_color":"FFC0CB"
+            "camera_position":{ "x": -1.5, "y": 1, "z": 1.25 }
         },
-        "description":"Amrs favourite figure"
+        "description":"Amrs favourite figure",
+        "colors":["fca311"]
     }
 ]

@@ -58,7 +58,7 @@ async function fetch_json_data(){
                 //scene setup
                 mesh = new THREE.Mesh(
                     new THREE[product.scene.mesh],
-                    new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
+                    new THREE.MeshLambertMaterial({color:parseInt("0x"+product.colors[0])})
                     )
                 mesh.position.set(-1,0,-1)
                 scene.add(mesh)
@@ -72,7 +72,20 @@ async function fetch_json_data(){
                 directionalLight.position.set(20,20,15)
                 const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);
                 scene.add(HemisphereLight,directionalLight);
+                let colors_div = document.getElementById('colors');
 
+                product.colors.forEach(color =>{
+                    const div = document.createElement('button');
+                    div.style.backgroundColor = '#'+color;
+                    div.className = 'colors'
+                    div.addEventListener('click',function(){
+                        mesh.material.color = new THREE.Color(parseInt("0x"+color))
+                    })
+                    colors_div.appendChild(div)
+
+                }
+                    
+                )
 
                 //html setup
                 document.getElementById('name').textContent = product.name;

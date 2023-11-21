@@ -91,7 +91,7 @@ function create_product_cards(product){
     controlses.push(controls);
     const Mesh = new THREE.Mesh(
         new THREE[product.scene.mesh],
-        new THREE.MeshLambertMaterial({color:parseInt("0x"+product.scene.mesh_color)})
+        new THREE.MeshLambertMaterial({color:parseInt("0x"+product.colors[0])})
     )
     scene.add(Mesh)
 
