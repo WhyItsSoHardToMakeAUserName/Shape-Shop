@@ -5,6 +5,17 @@ import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
 let scene,camera,renderer,mesh,controls;
 
+document.getElementById('switch_menu_button').addEventListener('click', function() {
+    var elementsToHide = document.querySelectorAll('.options_menu,.name, .colors_available, #price, #description, .gg-shopping-bag,.AddToCart');
+
+    // Set the width of each element to 0px
+    elementsToHide.forEach(function (element) {
+        element.classList.toggle('collapsed');
+    });
+    const button = document.getElementById('switch_button');
+    button.classList.toggle('rotate180')
+  });
+
 const fontloader = new FontLoader();
 const ttfloader = new TTFLoader();
 ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
@@ -27,13 +38,15 @@ ttfloader.load('/fonts/HEROEAU-ELEGANT.ttf',(json)=>{
 
 function animate() {
     requestAnimationFrame(animate);
+    controls.update();
 
-
+    console.log('Camera Position:', camera.position);
+console.log('Controls Target:', controls.target);
     renderer.render(scene,camera)
     if(mesh){
         mesh.rotation.y+=0.001
     }
-        // const cameraPosition = camera.position;
+    //     const cameraPosition = camera.position;
     // const cameraX = cameraPosition.x;
     // const cameraY = cameraPosition.y;
     // const cameraZ = cameraPosition.z;
@@ -62,12 +75,11 @@ async function fetch_json_data(){
                     )
                 mesh.position.set(-1,0,-1)
                 scene.add(mesh)
-                console.log(mesh)
                 scene.background = new THREE.Color(product.scene.background_color)
                 document.body.style.backgroundColor = product.scene.background_color
-                console.log(product.scene.background_color)
                 camera.position.set(0,1.5,3)
                 controls = new OrbitControls(camera,renderer.domElement)
+                controls.target.copy(mesh.position)
                 const directionalLight = new THREE.DirectionalLight(0xffffff,8) //color-->intensity
                 directionalLight.position.set(20,20,15)
                 const HemisphereLight = new THREE.HemisphereLight(0xffffff,undefined,1);

@@ -34,18 +34,18 @@
     </header>
     <main>
         <canvas  id="bg" class="intro_scene"></canvas>
-        <div class="menu">
-            <div class="switch_menu_button">
-                <button class="gg-chevron-right-o" ></button>
+        <div class="menu" id="menu">
+            <div class="switch_menu_button" id="switch_menu_button">
+                <button class="gg-chevron-right-o" id="switch_button" style="transition: all 0.5s ease;" ></button>
             </div>
             <div class="options_menu" id="options_menu">
                 <h1 class="name" id="name"></h1>
                 <div class="colors_available" id="colors"></div>
-                <price id="price"></price>
-                <p id="description"></p>
-                <div style="display: flex;">
+                <p id="price"></p>
+                <p id="description" style="white-space: nowrap;"></p>
+                <div style="display: inline-flex;">
                     <button class="AddToCart">Add to Cart</button>
-                    <p class="gg-shopping-bag"></p>
+                    <!-- <p class="gg-shopping-bag"></p> -->
                 </div>
                
             </div>  
